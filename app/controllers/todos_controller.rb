@@ -1,9 +1,12 @@
 class TodosController < ApplicationController
+  # Require user to be logged in for all actions
+  before_action :authenticate_user!
   before_action :set_todo, only: %i[ show edit update destroy ]
 
   # GET /todos or /todos.json
   def index
-    @todos = Todo.all
+    # Only show Todos belonging to the current user
+    @todos = current_user.todos.order(created_at: :desc)
   end
 
   # GET /todos/1 or /todos/1.json
@@ -21,7 +24,8 @@ class TodosController < ApplicationController
 
   # POST /todos or /todos.json
   def create
-    @todo = Todo.new(todo_params)
+    # Build the todo through the association, setting the user_id automatically
+    @todo = current_user.todos.build(todo_params)
 
     respond_to do |format|
       if @todo.save
@@ -60,7 +64,9 @@ class TodosController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_todo
-      @todo = Todo.find(params.expect(:id))
+      @todo = current_user.todos.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to todos_path, alert: "Todo not found or you are not authorized."
     end
 
     # Only allow a list of trusted parameters through.
