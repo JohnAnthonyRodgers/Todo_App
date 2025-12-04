@@ -1,10 +1,14 @@
-<div id="<%= dom_id todo %>" class="w-full sm:w-auto my-5 space-y-5">
-  <div>
-    <strong class="block font-medium mb-1">Title:</strong>
+<div id="<%= dom_id todo %>" class="flex items-center justify-between p-4 mb-3 border rounded-lg shadow-sm <%= todo.completed ? 'bg-green-100 border-green-300' : 'bg-white border-gray-200' %>">
+  
+  <span class="text-lg <%= todo.completed ? 'line-through text-gray-500' : 'text-gray-800' %>">
     <%= todo.title %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Completed:</strong>
-    <%= todo.completed? ? "Yes" : "No" %>
+  </span>
+
+  <div class="flex space-x-2">
+    <%= link_to todo.completed ? "Mark Incomplete" : "Mark Complete", todo_path(todo, todo: { completed: !todo.completed }), data: { turbo_method: :patch }, class: "text-sm font-medium text-indigo-600 hover:text-indigo-800" %>
+    
+    <%= link_to "Edit", edit_todo_path(todo), class: "text-sm font-medium text-yellow-600 hover:text-yellow-800" %>
+    
+    <%= link_to "Delete", todo_path(todo), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "text-sm font-medium text-red-600 hover:text-red-800" %>
   </div>
 </div>
